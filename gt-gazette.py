@@ -52,7 +52,7 @@ for page_number in range(1, total_pagination+1):
 
     # Get each document
     for document in page_content.json()['documentos']:
-        
+
         # Metadata
         document_date = re.sub(r'(\d{2})/(\d{2})/(\d{4}) 00:00:00', r'\1\2\3', document['FechaPublicacion'])
         document_id = document["DocumentID"]
@@ -60,7 +60,7 @@ for page_number in range(1, total_pagination+1):
         # Skip files already downloaded
         if os.path.isfile(f'{download_directory}{document_id}_{document_date}.pdf' ):
             print(f'{document_id}_{document_date}.pdf already in files. Skipping')
-        
+
         # Download files not present in local directory
         else:
             print(f'Downloading PDF with id {document["DocumentID"]}...')
@@ -74,8 +74,11 @@ for page_number in range(1, total_pagination+1):
 
             # Get PDF file page count
             page_count = PyPDF2.PdfFileReader(f'{download_directory}{document_id}_{document_date}.pdf').getNumPages()
-            
+
+            # Date
+            csv_date = document["FechaPublicacion"].replace(' 00:00:00', '')
+
             # Create CSV file
             with open(f'{download_directory}{document_id}_{document_date}.csv', 'w') as csv_file:
-                csv_file.write(f'Diario Oficial de Guatemala del {document["FechaPublicacion"]} (contenido completo)||Contenido Completo|{document["FechaPublicacion"]}|1|{page_count}')
+                csv_file.write(f'Diario Oficial de Guatemala del {csv_date} (contenido completo)||Contenido Completo|{csv_date}|1|{page_count}')
             print('OK')
