@@ -5,7 +5,7 @@ import requests
 
 
 # Download directory
-download_directory = os.environ['HOME']
+download_directory = '/usr/src/app/downloads/'
 
 # Set start url
 start_url = 'https://legal.dca.gob.gt/GestionDocumento/BusquedaDocumento'
