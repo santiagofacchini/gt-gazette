@@ -2,6 +2,7 @@ import os
 import re
 from datetime import date
 import requests
+import PyPDF2
 
 
 # Download directory
@@ -70,4 +71,11 @@ for page_number in range(1, total_pagination+1):
             # Write response content to PDF file
             with open(f'{download_directory}{document_id}_{document_date}.pdf', 'wb') as pdf_file:
                 pdf_file.write(response.content)
+
+            # Get PDF file page count
+            page_count = PyPDF2.PdfFileReader(f'{download_directory}{document_id}_{document_date}.pdf').getNumPages()
+            
+            # Create CSV file
+            with open(f'{download_directory}{document_id}_{document_date}.csv', 'w') as csv_file:
+                csv_file.write(f'Diario Oficial de Guatemala del {document["FechaPublicacion"]} (contenido completo)||Contenido Completo|{document["FechaPublicacion"]}|1|{page_count}')
             print('OK')
