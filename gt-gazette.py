@@ -57,7 +57,7 @@ for page_number in range(1, total_pagination+1):
         document_id = document["DocumentID"]
 
         # Skip files already downloaded
-        if os.path.isfile(f'{download_directory}/{document_id}_{document_date}.pdf' ):
+        if os.path.isfile(f'{download_directory}{document_id}_{document_date}.pdf' ):
             print(f'{document_id}_{document_date}.pdf already in files. Skipping')
         
         # Download files not present in local directory
@@ -68,6 +68,6 @@ for page_number in range(1, total_pagination+1):
             response = requests.get(f'https://legal.dca.gob.gt/GestionDocumento/DescargarPDFDocumento?idDocumento={document_id}')
 
             # Write response content to PDF file
-            with open(f'{download_directory}/{document_id}_{document_date}.pdf', 'wb') as pdf_file:
+            with open(f'{download_directory}{document_id}_{document_date}.pdf', 'wb') as pdf_file:
                 pdf_file.write(response.content)
             print('OK')
