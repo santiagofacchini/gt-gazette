@@ -1,7 +1,11 @@
+import os
 import re
 from datetime import date
 import requests
 
+
+# Download directory
+download_directory = os.environ['HOME']
 
 # Set start url
 start_url = 'https://legal.dca.gob.gt/GestionDocumento/BusquedaDocumento'
@@ -47,14 +51,23 @@ for page_number in range(1, total_pagination+1):
 
     # Get each document
     for document in page_content.json()['documentos']:
-        print(f'Downloading PDF with id {document["DocumentID"]}')
         
         # Metadata
         document_date = re.sub(r'(\d{2})/(\d{2})/(\d{4}) 00:00:00', r'\1\2\3', document['FechaPublicacion'])
         document_id = document["DocumentID"]
 
-        # Get PDF content
-        response = requests.get(f'https://legal.dca.gob.gt/GestionDocumento/DescargarPDFDocumento?idDocumento={document_id}')
+        # Skip files already downloaded
+        if os.path.isfile(f'{download_directory}/{document_id}_{document_date}.pdf' ):
+            print(f'{document_id}_{document_date}.pdf already in files. Skipping')
         
-        with open(f'/Users/santiagofacchini/Downloads/gt/{document_id}_{document_date}.pdf', 'wb') as pdf_file:
-            pdf_file.write(response.content)
+        # Download files not present in local directory
+        else:
+            print(f'Downloading PDF with id {document["DocumentID"]}...')
+
+            # Response in bytes
+            response = requests.get(f'https://legal.dca.gob.gt/GestionDocumento/DescargarPDFDocumento?idDocumento={document_id}')
+
+            # Write response content to PDF file
+            with open(f'{download_directory}/{document_id}_{document_date}.pdf', 'wb') as pdf_file:
+                pdf_file.write(response.content)
+            print('OK')
