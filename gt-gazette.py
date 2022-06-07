@@ -18,17 +18,8 @@ end_date = date.today().strftime("%d/%m/%Y")
 # Payload for POST request
 payload = {
     'categoria': 'VI',
-    'tipo': '',
-    'subtipo': '',
-    'texto': '',
     'fechaPublicacionInicial': start_date,
     'fechaPublicacionFinal': end_date,
-    'numeroTomo': '',
-    'numeroPagina': '',
-    'numeroEdicion': '',
-    'numeroAnuncio': '',
-    'tituloPublicacion': '',
-    'numeroReciboPago': '',
     'busquedaAvanzada': 'false',
 }
 
@@ -63,7 +54,7 @@ for page_number in range(1, total_pagination+1):
 
         # Download files not present in local directory
         else:
-            print(f'Downloading PDF with id {document["DocumentID"]}...')
+            print(f'Downloading PDF with id {document_id}...')
 
             # Response in bytes
             response = requests.get(f'https://legal.dca.gob.gt/GestionDocumento/DescargarPDFDocumento?idDocumento={document_id}')
@@ -82,3 +73,6 @@ for page_number in range(1, total_pagination+1):
             with open(f'{download_directory}{document_id}_{document_date}.csv', 'w') as csv_file:
                 csv_file.write(f'Diario Oficial de Guatemala del {csv_date} (contenido completo)||Contenido Completo|{csv_date}|1|{page_count}')
             print('OK')
+
+# Close requests session
+session.close()
