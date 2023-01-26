@@ -15,45 +15,11 @@ ftp_connection = ftplib.FTP(
 
 print(ftp_connection.getwelcome())
 
-ftp_connection.cwd(os.environ['GT_FTP_PATH'])
+ftp_connection.cwd('/descargas-rosario/gt')
 
-# Current issue's date
-day = date.today().strftime("%d")
-month = date.today().strftime("%m")
-year = date.today().strftime("%Y")
-ymd_format = f'{year}{month}{day}'
-
-'''print(f'\n***** Checking for latest issue: {year}/{month}/{day} *****')
-try:
-    r = requests.get(f'https://api.vlex.com/v1/sources/11510/issues/{year}-{month}-{day}/children.json').json()["results"]
-
-    # If issue is in vLex
-    if  r != []:
-        print(f'\n{ymd_format}: available at {r[0]["children"][0]["public_url"]}')
-
-        # Delete file if present in FTP
-        try:
-            ftp_connection.delete(f'{ymd_format}.pdf')
-            print(f'{ymd_format}: deleted it from FTP {os.environ["GT_FTP_PATH"]}')
-        except:
-            print(f'{ymd_format}: not present in FTP {os.environ["GT_FTP_PATH"]}')
-
-    # If file is neither in vLex nor in FTP
-    elif f'{ymd_format}.pdf' not in ftp_connection.nlst():
-        print(f'\n{ymd_format}: downloading it from source...')
-        current_issue = requests.get('https://legal.dca.gob.gt/Content/PDF/DocumentoDelDiaPdf.pdf').content
-        temp = io.BytesIO(current_issue)
-        ftp_connection.storbinary(f'STOR {ymd_format}.pdf', temp)
-        print(f'{ymd_format}: uploaded to FTP')
-
-except:
-    print(f'Could not download current issue at this execution')
-'''
-
-# Historic analysis
 # Get available docs in source
 start_url = 'https://legal.dca.gob.gt/GestionDocumento/BusquedaDocumento'
-start_date = '01/01/2022'
+start_date = '01/01/2023'
 end_date = date.today().strftime("%d/%m/%Y")
 
 print(f'\n***** Running data extraction from {start_date} to {end_date} *****')
@@ -96,20 +62,24 @@ for page_number in range(1, total_pagination+1):
             if  vlex_issue != []:
                 print(f'\n{document_date}: available at {vlex_issue[0]["children"][0]["public_url"]}')
 
-                # Delete file if present in FTP
+                # Delete file if present in FTP server
                 try:
                     ftp_connection.delete(f'{document_date}.pdf')
-                    print(f'{document_date}: deleted it from FTP {os.environ["GT_FTP_PATH"]}')
+                    print(f'{document_date}: deleted it from FTP server')
                 except:
-                    print(f'{document_date}: not present in FTP {os.environ["GT_FTP_PATH"]}')
+                    print(f'{document_date}: not present in FTP server')
 
-            # If file is neither in vLex nor in FTP
+            # If file is neither in vLex nor in FTP server
             elif f'{document_date}.pdf' not in ftp_connection.nlst():
                 print(f'\n{document_date}: downloading it from source...')
                 response = requests.get(f'https://legal.dca.gob.gt/GestionDocumento/DescargarPDFDocumento?idDocumento={document_id}').content
                 temp = io.BytesIO(response)
                 ftp_connection.storbinary(f'STOR {document_date}.pdf', temp)
                 print(f'{document_date}: uploaded to FTP')
+
+            # If file is already in FTP server but not in vLex
+            elif f'{document_date}.pdf' in ftp_connection.nlst():
+                print(f'\n{document_date}: already in FTP server but no processed')
 
 f'\n{session.close()}'
 f'\n{ftp_connection.close()}'
