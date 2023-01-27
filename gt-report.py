@@ -5,8 +5,6 @@ import os
 ftp_host = os.environ['AG2_HOST']
 ftp_user = os.environ['AG2_USER']
 ftp_passwd = os.environ['AG2_PASS']
-ftp_dir = os.environ['GT_FTP_PATH']
-vlex_source = os.environ['GT_SOURCE']
 
 ftp_connection = ftplib.FTP(
     ftp_host,
@@ -14,11 +12,11 @@ ftp_connection = ftplib.FTP(
     ftp_passwd,
 )
 
-ftp_connection.cwd(ftp_dir)
+ftp_connection.cwd('/descargas-rosario/gt')
 available_files = ftp_connection.nlst()
 
 if len(available_files) >= 1:
-    print(f'Archivos en {ftp_user} {ftp_dir} para ser cargados en la fuente {vlex_source}: {len(available_files)}\n')
+    print(f'Archivos en {ftp_user} /descargas-rosario/gt para ser cargados en la fuente 11510: {len(available_files)}\n')
 
     files = []
 
