@@ -16,12 +16,12 @@ ftp_connection.cwd('/descargas-rosario/gt')
 available_files = ftp_connection.nlst()
 
 if len(available_files) >= 1:
-    print(f'Archivos en {ftp_user} /descargas-rosario/gt para ser cargados en la fuente 11510: {len(available_files)}\n')
+    print(f'Archivos en {ftp_user} /descargas-rosario/gt para ser cargados en la fuente 11510:\n')
 
     files = []
 
     for file, facts in ftp_connection.mlsd():
-        if not file.startswith('.'):
+        if not os.path.basename(file).startswith('.'):
             year = facts["modify"][:4]
             month = facts["modify"][4:6]
             day = facts["modify"][6:8]
